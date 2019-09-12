@@ -4,11 +4,11 @@ class WebGL {
     constructor() {
         this.scene = new THREE.Scene()
         this.camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 100)
-        this.camera.position.x = 15
-        this.camera.position.y = 15
+        this.camera.position.x = 0
+        this.camera.position.y = 0
         this.camera.position.z = 13
         this.camera.lookAt(this.scene.position)
-        this.renderer = new THREE.WebGLRenderer()
+        this.renderer = new THREE.WebGLRenderer({ antialias: true })
         this.renderer.setClearColor(0x000000, 1.0)
         this.renderer.setSize(window.innerWidth, window.innerHeight)
         document.body.appendChild(this.renderer.domElement)
@@ -48,8 +48,7 @@ class WebGL {
 
         var material = new THREE.LineBasicMaterial({
             color: color
-        });
-        
+        });   
         var geometry = new THREE.Geometry();
         geometry.vertices.push(
             new THREE.Vector3( start.x, start.y, 0 ),
@@ -61,4 +60,18 @@ class WebGL {
 
         return line;
     }
+
+    drawRectangle(color, bottomLeft, topRight) {
+        var material = new THREE.MeshBasicMaterial({
+            color: color
+        })
+        let width = topRight.x - bottomLeft.x
+        let height = topRight.y - bottomLeft.y
+        var geometry = new THREE.PlaneGeometry( width, height, 1)
+        var rectangle = new THREE.Mesh(geometry, material)
+        rectangle.position.set(bottomLeft.x + width / 2.0, bottomLeft.y + height / 2.0, 0)
+        this.scene.add(rectangle)
+        return rectangle
+    }
+
 }
