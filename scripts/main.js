@@ -2,21 +2,6 @@ var app;
 
 $(document).ready(function () {
 
-    // drag and drop. Dropping will not work when dragover is not defined!    
-    window.addEventListener('dragover', (event) => {
-        console.log("Dragging")
-        event.stopPropagation();
-        event.preventDefault();
-    })
-
-    window.addEventListener('drop', (event) => {
-        console.log("Dropping")
-        event.preventDefault();  
-        event.stopPropagation();
-        var dropped = event.dataTransfer.files[0]
-        // loadAudio()
-    })
-
     $(window).resize( () => {
         app.webGL.resize()
     })
