@@ -74,4 +74,14 @@ class WebGL {
         return rectangle
     }
 
+    drawCircle(color, radius, position) {
+        var material = new THREE.MeshBasicMaterial({ color: color })
+        var geometry = new THREE.CircleGeometry( radius, 16 )
+        var circle = new THREE.Mesh(geometry, material)
+        
+        circle.position.set(position.x, position.y, 0)
+        
+        this.scene.add(circle) 
+        return circle
+    }
 }

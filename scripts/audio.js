@@ -39,9 +39,10 @@ class Audio {
         // Check if we already play audio and stop it:
         if (this.htmlAudio !== null) {
             // TODO: This is not enough. Old odio keeps playing
+            $('#message-box').html("Removing audio source")
+            console.log("removing audio source")
             this.htmlAudio.remove()     
             this.source.disconnect()
-            console.log("Removing existing audio")
             // TODO: Stop drawing !
         }
 
