@@ -1,7 +1,8 @@
 
 
 class WebGL {
-    constructor() {
+    constructor(messageBox) {
+        this.messageBox = messageBox
         this.scene = new THREE.Scene()
         this.camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 100)
         this.camera.position.x = 0
@@ -33,12 +34,8 @@ class WebGL {
         return true;
     }
 
-    render() {
-        requestAnimationFrame(this.render)
-        this.renderer.render(this.scene, this.camera)
-    }
-
     resize() {
+        console.log("Resizing three.js")
         this.camera.aspect = window.innerWidth / window.innerHeight;
         this.camera.updateProjectionMatrix();
         this.renderer.setSize( window.innerWidth, window.innerHeight );
