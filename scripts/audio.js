@@ -82,14 +82,17 @@ class Audio {
         // TODO: Check if that if that holds
         let sliceWidth = 16.0 / bufferLen 
         var x = -8.0 
+        
+        // var geometry = new Float32Array(2 * bufferLen);
+        // TODO: Appending to the array may be bad for performance. Try to use pre-allocated array
+        var geometry = Array()
 
         for(var i = 0; i < bufferLen; i++) {
    
             var v = dataArray[i] / 128.0  // v(max) is 2
             var y = -5.0 + (v * 10.0 / 2.0)
-            
 
-            this.webgl.drawCircle("red", sliceWidth, { x: x, y: y })
+            geometry.push(new THREE.Vector3(x, y, 0.0))
             /*
             if(i === 0) {
               canvasCtx.moveTo(x, y);
@@ -101,6 +104,11 @@ class Audio {
             x += sliceWidth
           }
 
+          // just for fun
+          let r = Math.floor(Math.random() * 255)
+          let g = Math.floor(Math.random() * 255)
+          let b = Math.floor(Math.random() * 255)
+          this.webgl.drawLineStrip('rgb('+r+','+g+','+b+')', geometry)
     }
 
     render() {

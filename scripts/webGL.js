@@ -81,4 +81,17 @@ class WebGL {
         this.scene.add(circle) 
         return circle
     }
+
+    drawLineStrip(color, vectors) {
+        console.log(vectors)
+        var material = new THREE.LineBasicMaterial({
+            color: color
+        });
+
+        var geometry = new THREE.Geometry();
+        geometry.vertices = vectors
+        var line = new THREE.Line(geometry, material)
+        this.scene.add(line)
+        return line
+    }
 }
