@@ -6,6 +6,7 @@ class MessageBox {
     }
     
     add(message) {
+        /*
         this.messages.push(message)
 
         // if the message box is full, remove the oldest entry
@@ -19,5 +20,6 @@ class MessageBox {
             htmlString += "<br/>" + message
         })
         $('#message-box').html(htmlString)
+        */
     }
 }

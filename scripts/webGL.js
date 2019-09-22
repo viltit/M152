@@ -1,8 +1,7 @@
 
 
 class WebGL {
-    constructor(messageBox) {
-        this.messageBox = messageBox
+    constructor() {
         this.scene = new THREE.Scene()
         this.camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 100)
         this.camera.position.x = 0

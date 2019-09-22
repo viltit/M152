@@ -26,6 +26,8 @@ $(document).ready(function () {
     app = new App()
     console.log("Check for WebGL and Audio API OK. App initialized")
     render()
+
+    $.notify("App finished loading. Drag and drop an audio source into the window.", "success")
 });
 
 function render() {
@@ -38,9 +40,25 @@ function render() {
 class App {
 
     constructor() {
-        this.messageBox = new MessageBox(4)
-        this.webGL = new WebGL(this.messageBox)
-        this.audio = new Audio(this.webGL, this.messageBox)
+        this.webGL = new WebGL()
+        this.audio = new Audio(this.webGL)
+
+        // setup gui
+        var GuiControlls = function() {
+            this.R = 0.7;
+            this.G = 0;
+            this.B = 0.7;
+        }
+        var controll = new GuiControlls({ autoplace: false })
+        this.gui = new dat.GUI()
+        this.gui.domElement.id = 'gui'   // allow to adapt our own positioning
+
+        // color controls
+        var colorFolder = this.gui.addFolder('Colors');
+        colorFolder.add(controll, 'R', 0, 1).name('Red').step(0.01);
+        colorFolder.add(controll, 'G', 0, 1).name('Green').step(0.01);
+        colorFolder.add(controll, 'B', 0, 1).name('Blue').step(0.01);
+        colorFolder.open();
 
         // test
         this.webGL.drawLine("red", { x: -5, y: -5 }, { x: 5, y: 5 })
