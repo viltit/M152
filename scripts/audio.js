@@ -118,11 +118,14 @@ class Audio {
            // this.webgl.drawRectangle("red", { x: x, y: -5 }, { x: x + barWidth, y: -5.0 + (v * 10.0 / 2.0)})
         }
 
-        
-        this.sceneObjects = this.webgl.drawBars(
+        const objs =  this.webgl.drawBars(
             'rgb('+this.controll.R+','+this.controll.G+','+this.controll.B+')',
-            geometry
-        ) 
+            geometry)
+
+        // TODO: 'Flat map' the objs array into the scene objects    
+        objs.forEach((obj) => {
+            this.sceneObjects.push(obj)
+        })
     }
 
     // FIRST TEST: Can we plot the frequency ??
@@ -179,14 +182,13 @@ class Audio {
         })
 
         // render depending on what user did choose
-        switch (this.controll.drawType) {
-            case 'waves':
-                this.analyseAudio()
-                break 
-            case 'bars':
-                this.analyseFrequencyData()
-                break
+        if (this.controll.drawWaves) {
+            this.analyseAudio()
         }
+        if (this.controll.drawBars) {
+            this.analyseFrequencyData()
+        }
+        
     }
 
     static hasBrowserSupport() {

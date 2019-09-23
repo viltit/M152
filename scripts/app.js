@@ -42,11 +42,14 @@ class App {
 
         // setup gui controlls
         var GuiControlls = function() {
-            this.R = 150;
-            this.G = 0;
-            this.B = 150;
-            this.fftExponent = 11;
-            this.drawType = "waves";
+            this.R = 150
+            this.G = 0
+            this.B = 150
+            this.fftExponent = 11
+            this.drawType = "waves"
+            this.drawWaves = true
+            this.drawBars = false 
+            this.drawCircle = false
         }
         var controll = new GuiControlls()
 
@@ -57,14 +60,21 @@ class App {
         this.gui.domElement.id = 'gui'   // allow to adapt our own positioning
 
         // color controls
-        var colorFolder = this.gui.addFolder('Colors');
-        colorFolder.add(controll, 'R', 0, 255).name('Red').step(1);
-        colorFolder.add(controll, 'G', 0, 255).name('Green').step(1);
-        colorFolder.add(controll, 'B', 0, 255).name('Blue').step(1);
-        colorFolder.open();
+        var colorFolder = this.gui.addFolder('Colors')
+        colorFolder.add(controll, 'R', 0, 255).name('Red').step(1)
+        colorFolder.add(controll, 'G', 0, 255).name('Green').step(1)
+        colorFolder.add(controll, 'B', 0, 255).name('Blue').step(1)
+        colorFolder.open()
         
+        var drawFolder = this.gui.addFolder('Draw types')
+        drawFolder.add(controll, 'drawWaves').name('Audio wave')
+        drawFolder.add(controll, 'drawBars').name('Frequency bar')
+        drawFolder.add(controll, 'drawCircle').name('Animated Circle')
+        drawFolder.open()
+
         this.gui.add(controll, 'drawType', { Waves: 'waves', Bars: 'bars', Circle: 'circle' })
-        /*
+        
+        /* It seems we can not change the fft once the analyser it set up
         this.gui.add(controll, 'fftExponent', 1, 14)
             .name('FFT Exponent')
             .step(1)
