@@ -1,12 +1,13 @@
 
 class Audio {
-    constructor(webgl) {
+    constructor(webgl, controll) {
         this.context = null 
         this.htmlAudio = null  
         this.source = null 
         this.analyser = null
         this.webgl = webgl
-        this.sceneObject = null
+        this.controll = controll
+        this.sceneObjects = Array()
 
         // drag and drop. Dropping will not work when dragover is not defined!    
         window.addEventListener('dragover', (event) => {
@@ -58,26 +59,75 @@ class Audio {
         this.htmlAudio.autoplay = true
         this.htmlAudio.crossOrigin = "anonymous"
         
-        $.notify("Loaded audio source " + data.name + " | File size: " + data.size + "bytes", "success")
-
+        // sadly, we can not print the duration of the audio source because it is streaming
+        $.notify("Loaded audio source " + data.name + " | File size: " + data.size + "bytes" + " | Duration: " + this.htmlAudio.duration, "success")
+        
         // create audio api context
         if (this.context === null) {
             this.context = new (window.AudioContext || window.webkitAudioContext)(); 
         }
 
-        // create audio source for AudioAPI
+        // create audio source for AudioAPI (return an AudioNode)
         this.source = this.context.createMediaElementSource(this.htmlAudio)
         // create analyser node:
         this.analyser = this.context.createAnalyser()
-        // connect the audio source ti the audio destination:
+        // connect the audio source to the audio destination:
         this.source.connect(this.context.destination)
-        // connect the analyer to the audio source:
+        // connect the analyer between the audio source and its destination
         this.source.connect(this.analyser)
+    
+        // the analyser by default takes 2048 data points in each update. We can change this value with "analyser.fftSize = "
+        // this value must be a power of 2
+        this.analyser.fftSize = Math.pow(2, this.controll.fftExponent)
+    }
+
+    resetAnalyser(fftExponent) {
+        
+        if (this.context === null) {
+            return
+        }
+        this.source.disconnect(this.analyser)
+        this.analyser = this.context.createAnalyser()
+        this.source.connect(this.analyser)
+        this.analyser.fftSize = Math.pow(2, fftExponent)
+    }
+
+    // TODO: Get rid of repeated code
+    // TODO: Use constants 
+    analyseFrequencyData() {
+
+        let bufferLen = this.analyser.frequencyBinCount
+        var dataArray = new Uint8Array(bufferLen)
+        this.analyser.getByteFrequencyData(dataArray)
+
+        // assume that three.js window coordinates are going from [ -8, -5 ] to [ 8, 5 ]
+        // TODO: Check if that if that holds
+        let barWidth = 16 / bufferLen
+        var x = -8.0
+        var geometry = Array()
+
+        for (var i = 0; i < bufferLen; i++) {
+
+            let v = dataArray[i] / 128.0
+            var barHeight = -5.0 + (v * 10.0 / 2.0)
+            var bottomLeft = new THREE.Vector3(x, -5.0)
+            var topRight = new THREE.Vector3(x + barWidth, -5.0 + (v * 10.0 / 2.0))
+            geometry.push({ bottomLeft: bottomLeft, topRight: topRight })
+            x += barWidth
+
+           // this.webgl.drawRectangle("red", { x: x, y: -5 }, { x: x + barWidth, y: -5.0 + (v * 10.0 / 2.0)})
+        }
+
+        
+        this.sceneObjects = this.webgl.drawBars(
+            'rgb('+this.controll.R+','+this.controll.G+','+this.controll.B+')',
+            geometry
+        ) 
     }
 
     // FIRST TEST: Can we plot the frequency ??
     analyseAudio() {
-        console.log("analyseAudio")
+        // console.log("analyseAudio")
         
         let bufferLen = this.analyser.frequencyBinCount
         var dataArray = new Uint8Array(bufferLen)
@@ -109,20 +159,33 @@ class Audio {
             x += sliceWidth
           }
 
-          // just for fun
-          let r = Math.floor(Math.random() * 255)
-          let g = Math.floor(Math.random() * 255)
-          let b = Math.floor(Math.random() * 255)
-
-          // TODO: Removing scene object should happen in class WebGL
-          this.webgl.scene.remove(this.sceneObjects)
-          this.sceneObjects = this.webgl.drawLineStrip('rgb('+r+','+g+','+b+')', geometry)
+        // TODO: We need to destroy the geometry too !!
+        var obj = this.webgl.drawLineStrip('rgb('+this.controll.R+','+this.controll.G+','+this.controll.B+')', geometry)
+        this.sceneObjects.push(obj)  
     }
 
     render() {
-        // TODO: Render different stuff depending on what user did choose
-        if (this.analyser !== null) {
-            this.analyseAudio()
+
+        // check if the analyser is up
+        if (this.analyser === null) {
+            return
+        }
+
+        // delete all previously rendered objects from the scene
+        this.sceneObjects.forEach(obj => {
+            this.webgl.scene.remove(obj)
+            obj.geometry.dispose()
+            obj.material.dispose()
+        })
+
+        // render depending on what user did choose
+        switch (this.controll.drawType) {
+            case 'waves':
+                this.analyseAudio()
+                break 
+            case 'bars':
+                this.analyseFrequencyData()
+                break
         }
     }
 

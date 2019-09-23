@@ -70,6 +70,30 @@ class WebGL {
         return rectangle
     }
 
+    // vectors is an array with { x: bottomLeft, y: top right } value-pairs
+    // TODO: Remove repeating code
+    drawBars(color, vectors) {
+
+        console.log(vectors.length)
+        var geometryArray = Array()
+        for (var i = 0; i < vectors.length; i++) {
+            var material = new THREE.MeshBasicMaterial({
+                color: color
+            })
+            
+            let bottomLeft = vectors[i].bottomLeft 
+            let topRight = vectors[i].topRight 
+            let width = topRight.x - bottomLeft.x 
+            let height = topRight.y - bottomLeft.y 
+            var geometry = new THREE.PlaneGeometry(width, height, 1)
+            var rectangle = new THREE.Mesh(geometry, material)
+            rectangle.position.set(bottomLeft.x + width / 2.0, bottomLeft.y + height / 2.0, 0)
+            geometryArray.push(rectangle)
+            this.scene.add(rectangle)
+        }
+        return geometryArray
+    }
+
     drawCircle(color, radius, position) {
         var material = new THREE.MeshBasicMaterial({ color: color })
         var geometry = new THREE.CircleGeometry( radius, 16 )
@@ -82,7 +106,7 @@ class WebGL {
     }
 
     drawLineStrip(color, vectors) {
-        console.log(vectors)
+        // console.log(vectors)
         var material = new THREE.LineBasicMaterial({
             color: color
         });
