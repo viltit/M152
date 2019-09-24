@@ -8,6 +8,7 @@ class Audio {
         this.webgl = webgl
         this.controll = controll
         this.sceneObjects = Array()
+        this.allowedFileTypes = [ "audio/mpeg", "audio/mp3", "audio/wav", "audio/mp4", "audio/ogg" ]
 
         // drag and drop. Dropping will not work when dragover is not defined!    
         window.addEventListener('dragover', (event) => {
@@ -23,7 +24,7 @@ class Audio {
             
             // check if we can access the events data transfer
             if (!event.dataTransfer) {
-                notify("It seems your browser does not support drag and drop operations!", "error")
+                $.notify("It seems your browser does not support drag and drop operations!", "error")
                 return
             }
 
@@ -32,7 +33,14 @@ class Audio {
             if (event.dataTransfer.types.count === 0) { return }
             if (event.dataTransfer.items[0].kind !== "file") { return }
 
-            // TODO: Check for file type
+            // Check for file type
+            // TODO: This just checks the file extension! A "real" file check would look at the data and inside the file and 
+            // see if the header is correct
+            let fileType = event.dataTransfer.items[0].type 
+            if (!this.allowedFileTypes.includes(fileType)) {
+                $.notify("File type " + fileType + " is not a valid audio file!")
+                return
+            }
 
             console.log(event.dataTransfer.types.length)
             for (var i = 0; i < event.dataTransfer.types.length; i++) {
@@ -167,19 +175,21 @@ class Audio {
         this.sceneObjects.push(obj)  
     }
 
-    render() {
 
-        // check if the analyser is up
-        if (this.analyser === null) {
-            return
-        }
+    render() {
 
         // delete all previously rendered objects from the scene
         this.sceneObjects.forEach(obj => {
             this.webgl.scene.remove(obj)
             obj.geometry.dispose()
             obj.material.dispose()
+            this.webgl.scene.dispose(obj)
         })
+
+        // check if the analyser is up
+        if (this.analyser === null) {
+            return
+        }
 
         // render depending on what user did choose
         if (this.controll.drawWaves) {
