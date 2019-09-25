@@ -84,7 +84,7 @@ class App {
         */
 
         // test
-        // this.webGL.drawLine("red", { x: -5, y: -5 }, { x: 5, y: 5 })
+        this.webGL.drawLine("green", { x: -5, y: -5 }, { x: 5, y: -5 })
         // this.webGL.drawRectangle("green", { x: -2, y: -2}, { x: 2, y: 2})
         // this.webGL.drawCircle("blue", 0.2, { x: 2, y: 2 })
     }

@@ -103,31 +103,33 @@ class Audio {
     // TODO: Get rid of repeated code
     // TODO: Use constants 
     analyseFrequencyData() {
-
+        let spacing = 0.005
         let bufferLen = this.analyser.frequencyBinCount
         var dataArray = new Uint8Array(bufferLen)
         this.analyser.getByteFrequencyData(dataArray)
-
         // assume that three.js window coordinates are going from [ -8, -5 ] to [ 8, 5 ]
         // TODO: Check if that if that holds
-        let barWidth = 16 / bufferLen
+        let barWidth = 16 / bufferLen - spacing
         var x = -8.0
         var geometry = Array()
-
         for (var i = 0; i < bufferLen; i++) {
 
-            let v = dataArray[i] / 128.0
-            var barHeight = -5.0 + (v * 10.0 / 2.0)
-            var bottomLeft = new THREE.Vector3(x, -5.0)
-            var topRight = new THREE.Vector3(x + barWidth, -5.0 + (v * 10.0 / 2.0))
-            geometry.push({ bottomLeft: bottomLeft, topRight: topRight })
-            x += barWidth
-
-           // this.webgl.drawRectangle("red", { x: x, y: -5 }, { x: x + barWidth, y: -5.0 + (v * 10.0 / 2.0)})
+            // dataArray goes from 0 to 255 -> map to [ 0:10 ]
+            // data[0]: begins at 0Hz
+            // data[max]: ends at context.sampleRate Hz
+            let v = dataArray[i] / 255.0 * 10.0
+            
+            // do not draw 0 values
+            if (v != 0) {
+                var bottomLeft = new THREE.Vector3(x, -5.0, 0)
+                var topRight = new THREE.Vector3(x + barWidth, -5.0 + v, 0)
+                geometry.push({ bottomLeft: bottomLeft, topRight: topRight })
+            }
+            x += barWidth + spacing
         }
 
         const objs =  this.webgl.drawBars(
-            'rgb('+this.controll.R+','+this.controll.G+','+this.controll.B+')',
+            'rgb('+this.controll.R +','+this.controll.G+','+this.controll.B+')',
             geometry)
 
         // TODO: 'Flat map' the objs array into the scene objects    
