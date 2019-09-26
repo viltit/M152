@@ -179,7 +179,7 @@ class Audio {
 
 
     render() {
-
+        console.log("REMOVING " + this.sceneObjects.length + " OBJECTS")
         // delete all previously rendered objects from the scene
         this.sceneObjects.forEach(obj => {
             this.webgl.scene.remove(obj)
@@ -187,6 +187,7 @@ class Audio {
             obj.material.dispose()
             this.webgl.scene.dispose(obj)
         })
+        this.sceneObjects.length = 0
 
         // check if the analyser is up
         if (this.analyser === null) {
