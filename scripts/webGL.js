@@ -2,11 +2,12 @@
 
 class WebGL {
     constructor() {
-        this.scene = new THREE.Scene()
+        this.scene = new THREE.Scene()  
         this.camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 100)
         this.camera.position.x = 0
         this.camera.position.y = 0
         this.camera.position.z = 13
+        this.circleTexture = null
         this.camera.lookAt(this.scene.position)
         this.renderer = new THREE.WebGLRenderer({ antialias: true })
         this.renderer.setClearColor(0x000000, 1.0)
@@ -34,7 +35,12 @@ class WebGL {
     }
 
     resize() {
-        console.log("Resizing three.js")
+
+        // I was not able to do everything nice for smartphone in portrait orientation -> ask the user to use landscape
+        if (window.innerWidth < window.innerHeight) {
+            $.notify("This app will look better if you rotate your device to landscape orientation.", "warning")
+        }
+
         this.camera.aspect = window.innerWidth / window.innerHeight;
         this.camera.updateProjectionMatrix();
         this.renderer.setSize( window.innerWidth, window.innerHeight );
@@ -117,4 +123,21 @@ class WebGL {
         this.scene.add(line)
         return line
     }
+
+    drawSprites(color, scale, positions) {
+        if (this.spriteMap == null) {
+            this.spriteMap = new THREE.TextureLoader().load("textures/circle.png")
+        }
+        var material = new THREE.SpriteMaterial( { map: this.spriteMap, color: color } )
+        return positions.map( position => {
+            let sprite = new THREE.Sprite(material)
+            this.scene.add(sprite)
+            sprite.position.x = position.x
+            sprite.position.y = position.y
+            sprite.scale.x = scale 
+            sprite.scale.y = scale
+            return sprite
+        })
+    }
+
 }

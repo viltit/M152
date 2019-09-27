@@ -7,9 +7,11 @@ var app;
 
 $(document).ready(function () {
 
+    // register resize event and orientation event
     $(window).resize( () => {
         app.webGL.resize()
     })
+    
 
     // check if webgl and audio ai are supported by the browser
     if (!WebGL.hasBrowserSupport()) {
@@ -84,6 +86,13 @@ class App {
         */
 
         // test
+        let positions = [
+            new THREE.Vector2(1,1),
+            new THREE.Vector2(2,2),
+            new THREE.Vector2(3,3)
+        ]
+        this.webGL.drawSprites(0xff00ffaa, 0.1, positions)
+
         this.webGL.drawLine("green", { x: -5, y: -5 }, { x: 5, y: -5 })
         // this.webGL.drawRectangle("green", { x: -2, y: -2}, { x: 2, y: 2})
         // this.webGL.drawCircle("blue", 0.2, { x: 2, y: 2 })

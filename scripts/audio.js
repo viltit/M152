@@ -102,6 +102,7 @@ class Audio {
 
     // TODO: Get rid of repeated code
     // TODO: Use constants 
+    // TODO: Rename
     analyseFrequencyData() {
         let spacing = 0.005
         let bufferLen = this.analyser.frequencyBinCount
@@ -138,7 +139,7 @@ class Audio {
         })
     }
 
-    // FIRST TEST: Can we plot the frequency ??
+    // TODO: Rename
     analyseAudio() {
         // console.log("analyseAudio")
         
@@ -177,9 +178,34 @@ class Audio {
         this.sceneObjects.push(obj)  
     }
 
+    drawAnimatedCircleFromWave() {
+        
+        let bufferLen = this.analyser.frequencyBinCount
+        var dataArray = new Uint8Array(bufferLen)
+        this.analyser.getByteTimeDomainData(dataArray)
+
+        // we want to arrange our Points on a circle:
+        // TODO: ONLY CALCULATE THIS ONCE AND THEN CHANGE POSITION -> this is a waist of performance here !
+        let deltaAngle = 2 * Math.PI / bufferLen 
+        var angle = 0.0
+        var baseRadius = 3.0
+        var positions = Array()
+        for (var i = 0; i < bufferLen; i++) {
+            let radius = baseRadius + dataArray[i] / 128.0
+            let x = radius * Math.cos(angle)
+            let y = radius * Math.sin(angle)
+            positions.push(new THREE.Vector2(x, y))
+            angle += deltaAngle
+        } 
+        
+        let color = new THREE.Color(this.controll.r, this.controll.g, this.controll.b)
+        this.webgl.drawSprites(0xff0000, 0.2, positions).forEach( sprite => {
+            this.sceneObjects.push(sprite)
+        })
+        
+    }
 
     render() {
-        console.log("REMOVING " + this.sceneObjects.length + " OBJECTS")
         // delete all previously rendered objects from the scene
         this.sceneObjects.forEach(obj => {
             this.webgl.scene.remove(obj)
@@ -200,6 +226,9 @@ class Audio {
         }
         if (this.controll.drawBars) {
             this.analyseFrequencyData()
+        }
+        if (this.controll.drawCircle) {
+            this.drawAnimatedCircleFromWave()
         }
         
     }
