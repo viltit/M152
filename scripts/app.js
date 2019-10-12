@@ -45,13 +45,17 @@ class App {
         // setup gui controlls
         var GuiControlls = function() {
             this.R = 150
-            this.G = 0
+            this.G = 114
             this.B = 150
             this.fftExponent = 11
             this.drawType = "waves"
             this.drawWaves = true
             this.drawBars = false 
             this.drawCircle = false
+            this.drawSpiral = false
+            this.spiralMinRadius = 1
+            this.spiralMaxRadius = 3
+            this.spiralNumCircles = 3
         }
         var controll = new GuiControlls()
 
@@ -69,13 +73,29 @@ class App {
         colorFolder.open()
         
         var drawFolder = this.gui.addFolder('Draw types')
-        drawFolder.add(controll, 'drawWaves').name('Audio wave')
-        drawFolder.add(controll, 'drawBars').name('Frequency bar')
-        drawFolder.add(controll, 'drawCircle').name('Animated Circle')
+        drawFolder.add(controll, 'drawWaves').name('Audio wave').listen().onChange( () => {
+            sprialFolder.close()
+        })
+        drawFolder.add(controll, 'drawBars').name('Frequency bar').listen().onChange( () => {
+            sprialFolder.close()
+        })
+        drawFolder.add(controll, 'drawCircle').name('Animated Circle').listen().onChange( () => {
+            this.audio.resetCircle()
+            sprialFolder.close()
+        })
+        drawFolder.add(controll, 'drawSpiral').name('Animated Spiral').listen().onChange( () => {
+            this.audio.resetSpiral()
+            sprialFolder.open()
+        })
         drawFolder.open()
 
-        this.gui.add(controll, 'drawType', { Waves: 'waves', Bars: 'bars', Circle: 'circle' })
-        
+        var sprialFolder = this.gui.addFolder('Spiral settings')
+        sprialFolder.add(controll, 'spiralMinRadius', 0.1, 3).name('inner radius').step(0.1)
+        sprialFolder.add(controll, 'spiralMaxRadius', 1, 6).name('outer radius').step(0.1)
+        sprialFolder.add(controll, 'spiralNumCircles', 1, 10).name('number of circles').step(1)
+
+        // TODO: Open and close sub-menus for circle and spiral: Adjust point size, blending, ...
+
         /* It seems we can not change the fft once the analyser it set up
         this.gui.add(controll, 'fftExponent', 1, 14)
             .name('FFT Exponent')
@@ -96,9 +116,7 @@ class App {
 
         this.webGL.drawLine("green", { x: -5, y: -5 }, { x: 5, y: -5 })
 
-
-
-
+        // TEST: Lights -> do not work with three.PointMaterial :(
         var light = new THREE.PointLight( 0xff0000, 1, 100 );
         light.position.set( 0, 0, 3 );
         this.webGL.scene.add( light );

@@ -149,9 +149,7 @@ class WebGL {
 
 }
 
-    /**
- * We define our
- */
+/* wrapper around three.js point cloud class */
 class Particle {
     constructor(webgl, positions, color) {
         this.webgl = webgl
@@ -163,14 +161,15 @@ class Particle {
     // generates the necessary three.js objects and adds them to the scene
     generatePointCloud() {
 
-        var material = new THREE.PointsMaterial({ size: 0.2, vertexColors: THREE.VertexColors })
+        let spriteMap = new THREE.TextureLoader().load("textures/circle.png")
+        var material = new THREE.PointsMaterial({ map: spriteMap, size: 0.6, vertexColors: THREE.VertexColors, opacity: 0.5 })
         
         material.transparent = true 
         material.blending = THREE.AdditiveBlending
 
         var geometry = new THREE.Geometry();
         geometry.vertices = this.positions
-      //  geometry.colors = this.color
+        //  geometry.colors = this.color
 
         var cloud = new THREE.Points(geometry, material);
         cloud.sizeAttenuation = true;

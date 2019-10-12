@@ -7,7 +7,9 @@ class Audio {
         this.htmlAudio = null  
         this.source = null 
         this.analyser = null
+        // TODO: Only initialize when needed ?
         this.animatedCircle = new AnimatedCircle(webgl, controll, 3.0)
+        this.animatedSpiral = new AnimantedSpiral(webgl, controll, 1.0, 3.0, 3)
         this.webgl = webgl
         this.controll = controll
         this.sceneObjects = Array()
@@ -199,20 +201,28 @@ class Audio {
     }
 
     drawAnimatedCircleFromWave() {
-        
         let dataArray = this.getWaveformData()
         let bufferLen = dataArray.length
         this.animatedCircle.update(dataArray)
     }
 
+    resetCircle() {
+        this.animatedCircle.removePoints()
+    }
+
     drawAnimatedSpiralFromWave() {
-        
         let dataArray = this.getWaveformData()
         let bufferLen = dataArray.length
+        this.animatedSpiral.update(dataArray)
+    }
+
+    resetSpiral() {
+        this.animatedSpiral.removePoints()
     }
 
     render() {
-        // delete all previously rendered objects from the scene
+        // delete all previously rendered lines from the scene. 
+        // TODO: Solve this more effeciently. Just adapt the positions of the line string, like you do for the circle
         this.sceneObjects.forEach(obj => {
             this.webgl.scene.remove(obj)
             obj.geometry.dispose()
@@ -235,6 +245,9 @@ class Audio {
         }
         if (this.controll.drawCircle) {
             this.drawAnimatedCircleFromWave()
+        }
+        if (this.controll.drawSpiral) {
+            this.drawAnimatedSpiralFromWave()
         }
         
     }
