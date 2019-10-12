@@ -18,11 +18,11 @@ $(document).ready(function () {
         $.notify("WebGl is not supported by your browser.", "warning")
         return
     }
-    /*
+    
     if (!Audio.hasBrowserSupport()) {
         $.notify("Audio API is not supported by your browser.", "warning")
         return
-    }  */
+    } 
 
     // initiate app
     app = new App()
@@ -95,6 +95,13 @@ class App {
        // this.webGL.drawSprites(0xff0000ff, 2, positions)
 
         this.webGL.drawLine("green", { x: -5, y: -5 }, { x: 5, y: -5 })
+
+
+
+
+        var light = new THREE.PointLight( 0xff0000, 1, 100 );
+        light.position.set( 0, 0, 3 );
+        this.webGL.scene.add( light );
         // this.webGL.drawRectangle("green", { x: -2, y: -2}, { x: 2, y: 2})
         // this.webGL.drawCircle("blue", 0.2, { x: 2, y: 2 })
     }

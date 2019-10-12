@@ -12,6 +12,10 @@ class WebGL {
         this.renderer = new THREE.WebGLRenderer({ antialias: true })
         this.renderer.setClearColor(0x000000, 1.0)
         this.renderer.setSize(window.innerWidth, window.innerHeight)
+        const color = 0xff0000;
+        const intensity = 0.4;
+        const light1 = new THREE.AmbientLight(color, intensity);
+        this.scene.add(light1);
         document.body.appendChild(this.renderer.domElement)
     }
 
@@ -83,7 +87,7 @@ class WebGL {
         console.log(vectors.length)
         var geometryArray = Array()
         for (var i = 0; i < vectors.length; i++) {
-            var material = new THREE.MeshBasicMaterial({
+            var material = new THREE.MeshPhongMaterial({
                 color: color
             })
             
@@ -128,6 +132,8 @@ class WebGL {
         if (this.spriteMap == null) {
             this.spriteMap = new THREE.TextureLoader().load("textures/circle.png")
         }
+
+        // TODO: Sprite material does not support light -> switch
         var material = new THREE.SpriteMaterial( { map: this.spriteMap, color: color, opacity: 0.5, transparent: true, alphaTest: 0.5 } )
         return positions.map( position => {
             let sprite = new THREE.Sprite(material)
@@ -140,4 +146,44 @@ class WebGL {
         })
     }
 
+
 }
+
+    /**
+ * We define our
+ */
+class Particle {
+    constructor(webgl, positions, color) {
+        this.webgl = webgl
+        this.positions = positions
+        this.color = color
+        this.cloud = null
+    }
+
+    // generates the necessary three.js objects and adds them to the scene
+    generatePointCloud() {
+
+        var material = new THREE.PointsMaterial({ size: 0.2, vertexColors: THREE.VertexColors })
+        
+        material.transparent = true 
+        material.blending = THREE.AdditiveBlending
+
+        var geometry = new THREE.Geometry();
+        geometry.vertices = this.positions
+      //  geometry.colors = this.color
+
+        var cloud = new THREE.Points(geometry, material);
+        cloud.sizeAttenuation = true;
+        cloud.sortPoints = true;
+
+        this.webgl.scene.add(cloud)
+        this.cloud = cloud
+    }
+
+    deletePointCloud() {
+        this.webgl.scene.remove(this.cloud)
+        this.cloud.material.dispose()
+        this.cloud.geometry.dispose()
+    }
+}
+

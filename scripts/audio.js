@@ -202,29 +202,7 @@ class Audio {
         
         let dataArray = this.getWaveformData()
         let bufferLen = dataArray.length
-
         this.animatedCircle.update(dataArray)
-
-        /*
-        // we want to arrange our Points on a circle:
-        // TODO: ONLY CALCULATE THIS ONCE AND THEN CHANGE POSITION -> this is a waist of performance here !
-        let deltaAngle = 2 * Math.PI / bufferLen 
-        var angle = 0.0
-        var baseRadius = 3.0
-        var positions = Array()
-        for (var i = 0; i < bufferLen; i++) {
-            let radius = baseRadius + dataArray[i] / 128.0
-            let x = radius * Math.cos(angle)
-            let y = radius * Math.sin(angle)
-            positions.push(new THREE.Vector2(x, y))
-            angle += deltaAngle
-        } 
-        
-        let color = new THREE.Color(this.controll.R / 255, this.controll.G / 255, this.controll.B / 255)
-        this.webgl.drawSprites(color, 0.2, positions).forEach( sprite => {
-            this.sceneObjects.push(sprite)
-        })
-        */
     }
 
     drawAnimatedSpiralFromWave() {
