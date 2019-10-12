@@ -1,3 +1,5 @@
+// Import was leading to weird errors, leave for now
+// import AnimatedCircle from './animatedCircle.js'
 
 class Audio {
     constructor(webgl, controll) {
@@ -5,6 +7,7 @@ class Audio {
         this.htmlAudio = null  
         this.source = null 
         this.analyser = null
+        this.animatedCircle = new AnimatedCircle(webgl, controll, 3.0)
         this.webgl = webgl
         this.controll = controll
         this.sceneObjects = Array()
@@ -100,16 +103,35 @@ class Audio {
         this.analyser.fftSize = Math.pow(2, fftExponent)
     }
 
-    // TODO: Get rid of repeated code
-    // TODO: Use constants 
-    // TODO: Rename
-    analyseFrequencyData() {
-        let spacing = 0.005
+    getWaveformData() {
+        if (this.analyser === null) {
+            console.log("Error: Called <getWaveformData> with no Analyser!")
+            return
+        }
+        let bufferLen = this.analyser.frequencyBinCount
+        var dataArray = new Uint8Array(bufferLen)
+        this.analyser.getByteTimeDomainData(dataArray)
+        return  dataArray
+    }
+
+    getFrequencyData() {
+        if (this.analyser === null) {
+            console.log("Error: Called <getFrequencyData> with no Analyser!")
+            return
+        }
         let bufferLen = this.analyser.frequencyBinCount
         var dataArray = new Uint8Array(bufferLen)
         this.analyser.getByteFrequencyData(dataArray)
+        return dataArray
+    }
+
+    // TODO: Rename
+    analyseFrequencyData() {
+    
+        let dataArray = this.getFrequencyData()
+        let bufferLen = dataArray.length
+        let spacing = 0.005
         // assume that three.js window coordinates are going from [ -8, -5 ] to [ 8, 5 ]
-        // TODO: Check if that if that holds
         let barWidth = 16 / bufferLen - spacing
         var x = -8.0
         var geometry = Array()
@@ -141,11 +163,9 @@ class Audio {
 
     // TODO: Rename
     analyseAudio() {
-        // console.log("analyseAudio")
         
-        let bufferLen = this.analyser.frequencyBinCount
-        var dataArray = new Uint8Array(bufferLen)
-        this.analyser.getByteTimeDomainData(dataArray)
+        let dataArray = this.getWaveformData()
+        let bufferLen = dataArray.length
 
         // assume that three.js window coordinates are going from [ -8, -5 ] to [ 8, 5 ]
         // TODO: Check if that if that holds
@@ -180,10 +200,12 @@ class Audio {
 
     drawAnimatedCircleFromWave() {
         
-        let bufferLen = this.analyser.frequencyBinCount
-        var dataArray = new Uint8Array(bufferLen)
-        this.analyser.getByteTimeDomainData(dataArray)
+        let dataArray = this.getWaveformData()
+        let bufferLen = dataArray.length
 
+        this.animatedCircle.update(dataArray)
+
+        /*
         // we want to arrange our Points on a circle:
         // TODO: ONLY CALCULATE THIS ONCE AND THEN CHANGE POSITION -> this is a waist of performance here !
         let deltaAngle = 2 * Math.PI / bufferLen 
@@ -202,6 +224,13 @@ class Audio {
         this.webgl.drawSprites(color, 0.2, positions).forEach( sprite => {
             this.sceneObjects.push(sprite)
         })
+        */
+    }
+
+    drawAnimatedSpiralFromWave() {
+        
+        let dataArray = this.getWaveformData()
+        let bufferLen = dataArray.length
     }
 
     render() {

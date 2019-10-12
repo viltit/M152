@@ -18,11 +18,11 @@ $(document).ready(function () {
         $.notify("WebGl is not supported by your browser.", "warning")
         return
     }
-    
+    /*
     if (!Audio.hasBrowserSupport()) {
         $.notify("Audio API is not supported by your browser.", "warning")
         return
-    } 
+    }  */
 
     // initiate app
     app = new App()
