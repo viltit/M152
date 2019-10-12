@@ -198,11 +198,10 @@ class Audio {
             angle += deltaAngle
         } 
         
-        let color = new THREE.Color(this.controll.r, this.controll.g, this.controll.b)
-        this.webgl.drawSprites(0xff0000, 0.2, positions).forEach( sprite => {
+        let color = new THREE.Color(this.controll.R / 255, this.controll.G / 255, this.controll.B / 255)
+        this.webgl.drawSprites(color, 0.2, positions).forEach( sprite => {
             this.sceneObjects.push(sprite)
         })
-        
     }
 
     render() {

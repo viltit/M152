@@ -128,7 +128,7 @@ class WebGL {
         if (this.spriteMap == null) {
             this.spriteMap = new THREE.TextureLoader().load("textures/circle.png")
         }
-        var material = new THREE.SpriteMaterial( { map: this.spriteMap, color: color } )
+        var material = new THREE.SpriteMaterial( { map: this.spriteMap, color: color, opacity: 0.5, transparent: true, alphaTest: 0.5 } )
         return positions.map( position => {
             let sprite = new THREE.Sprite(material)
             this.scene.add(sprite)
