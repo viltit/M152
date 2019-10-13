@@ -5,6 +5,7 @@
 
 var app;
 
+// Execute when site is ready
 $(document).ready(function () {
 
     // register resize event and orientation event
@@ -12,7 +13,6 @@ $(document).ready(function () {
         app.webGL.resize()
     })
     
-
     // check if webgl and audio ai are supported by the browser
     if (!WebGL.hasBrowserSupport()) {
         $.notify("WebGl is not supported by your browser.", "warning")
@@ -26,18 +26,24 @@ $(document).ready(function () {
 
     // initiate app
     app = new App()
+
+    // start rendering loop
     render()
 
     $.notify("App finished loading. Drag and drop an audio source into the window.", "success")
 });
 
+// rendering loop
 function render() {
-    console.log("Render")
+    // console.log("Render")
     requestAnimationFrame(render)
     app.audio.render()
     app.webGL.renderer.render(app.webGL.scene, app.webGL.camera)
 }
 
+/*
+    Class App - holds instances of our Three.js-Wrapper and our Audio-API-Wrapper. Also sets up the UI
+*/
 class App {
 
     constructor() {

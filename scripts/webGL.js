@@ -39,6 +39,9 @@ class WebGL {
     }
 
     resize() {
+        if (this.camera === null || this.scene === null) {
+            return
+        }
 
         // I was not able to do everything nice for smartphone in portrait orientation -> ask the user to use landscape
         if (window.innerWidth < window.innerHeight) {

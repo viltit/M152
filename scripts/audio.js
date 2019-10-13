@@ -1,14 +1,19 @@
 // Import was leading to weird errors, leave for now
 // import AnimatedCircle from './animatedCircle.js'
 
+/*
+    Wrapper around the Audio-API
+    Provides all drawing functions the user can choose in the gui
+*/
 class Audio {
     constructor(webgl, controll) {
         this.context = null 
         this.htmlAudio = null  
         this.source = null 
         this.analyser = null
-        // TODO: Only initialize when needed ?
+        // TODO: Only initialize when needed 
         this.animatedCircle = new AnimatedCircle(webgl, controll, 3.0)
+        // TODO: Only initialize when needed 
         this.animatedSpiral = new AnimantedSpiral(webgl, controll, 1.0, 3.0, 3)
         this.webgl = webgl
         this.controll = controll
@@ -47,7 +52,7 @@ class Audio {
                 return
             }
 
-            console.log(event.dataTransfer.types.length)
+            // console.log(event.dataTransfer.types.length)
             for (var i = 0; i < event.dataTransfer.types.length; i++) {
                 console.log("... items[" + i + "].kind = " + event.dataTransfer.items[i].kind + " ; type = " + event.dataTransfer.items[i].type)
                 console.log(event.dataTransfer.files[i].name)
@@ -57,6 +62,9 @@ class Audio {
         })
     }
 
+    /* 
+    Load audio after drag and drop and create an Audio-Analyser on top of the Audio-Data
+    */
     loadAudio(data) {
 
         // Check if we already play audio and stop it:
@@ -67,10 +75,13 @@ class Audio {
         }
 
         // create html audio element and play soundfile
-        this.htmlAudio = document.createElement('audio')
+        var docBody = document.getElementById('body')
+        this.htmlAudio = document. createElement('audio')
+        docBody.appendChild(this.htmlAudio)
         this.htmlAudio.src = URL.createObjectURL(data) // sets the audio source to the dropped file
         this.htmlAudio.autoplay = true
         this.htmlAudio.crossOrigin = "anonymous"
+        this.htmlAudio.controls = true 
         
         // sadly, we can not print the duration of the audio source because it is streaming
         $.notify("Loaded audio source " + data.name + " | File size: " + data.size + "bytes" + " | Duration: " + this.htmlAudio.duration, "success")
