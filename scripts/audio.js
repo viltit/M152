@@ -128,6 +128,7 @@ class Audio {
     }
 
     getFrequencyData() {
+        console.log(this.htmlAudio.duration)
         if (this.analyser === null) {
             console.log("Error: Called <getFrequencyData> with no Analyser!")
             return

@@ -41,9 +41,7 @@ function render() {
     app.webGL.renderer.render(app.webGL.scene, app.webGL.camera)
 }
 
-/*
-    Class App - holds instances of our Three.js-Wrapper and our Audio-API-Wrapper. Also sets up the UI
-*/
+// Class App - holds instances of our Three.js-Wrapper and our Audio-API-Wrapper. Also sets up the UI
 class App {
 
     constructor() {
@@ -62,6 +60,9 @@ class App {
             this.spiralMinRadius = 1
             this.spiralMaxRadius = 3
             this.spiralNumCircles = 3
+            this.spiralRotationSpeed = 5
+            this.spiralPointDamping = 5     // how far the points are jumping depending on the waveform-input
+            this.circleRadius = 3
         }
         var controll = new GuiControlls()
 
@@ -71,23 +72,24 @@ class App {
         this.gui = new dat.GUI({ autoplace: false })
         this.gui.domElement.id = 'gui'   // allow to adapt our own positioning
 
-        // color controls
+        // color controlls
         var colorFolder = this.gui.addFolder('Colors')
         colorFolder.add(controll, 'R', 0, 255).name('Red').step(1)
         colorFolder.add(controll, 'G', 0, 255).name('Green').step(1)
         colorFolder.add(controll, 'B', 0, 255).name('Blue').step(1)
         colorFolder.open()
         
+        // form controlls
         var drawFolder = this.gui.addFolder('Draw types')
         drawFolder.add(controll, 'drawWaves').name('Audio wave').listen().onChange( () => {
-            sprialFolder.close()
+            // sprialFolder.close()
         })
         drawFolder.add(controll, 'drawBars').name('Frequency bar').listen().onChange( () => {
-            sprialFolder.close()
+            // sprialFolder.close()
         })
         drawFolder.add(controll, 'drawCircle').name('Animated Circle').listen().onChange( () => {
             this.audio.resetCircle()
-            sprialFolder.close()
+            circleFolder.open()
         })
         drawFolder.add(controll, 'drawSpiral').name('Animated Spiral').listen().onChange( () => {
             this.audio.resetSpiral()
@@ -95,10 +97,17 @@ class App {
         })
         drawFolder.open()
 
+        // circle controls
+        var circleFolder = this.gui.addFolder('Circle settings')
+        circleFolder.add(controll, 'circleRadius', 1, 6).name("radius").step(0.2)
+
+        // spiral controlls
         var sprialFolder = this.gui.addFolder('Spiral settings')
         sprialFolder.add(controll, 'spiralMinRadius', 0.1, 3).name('inner radius').step(0.1)
         sprialFolder.add(controll, 'spiralMaxRadius', 1, 6).name('outer radius').step(0.1)
         sprialFolder.add(controll, 'spiralNumCircles', 1, 10).name('number of circles').step(1)
+        sprialFolder.add(controll, "spiralRotationSpeed", 0, 10).name('rotation speed').step(1)
+        sprialFolder.add(controll, "spiralPointDamping", 0, 10).name('points jumping distance').step(1)
 
         // TODO: Open and close sub-menus for circle and spiral: Adjust point size, blending, ...
 

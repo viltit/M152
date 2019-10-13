@@ -2,10 +2,9 @@
 // TODO in both classes: Code in calculatePoints and update is repeating
 
 class AnimatedCircle {
-    constructor(webgl, controll, radius) {
+    constructor(webgl, controll) {
         this.webgl = webgl
         this.controll = controll 
-        this.radius = radius
         this.points = null
     }
 
@@ -14,7 +13,7 @@ class AnimatedCircle {
 
         let deltaAngle = 2 * Math.PI / bufferLen 
         var angle = 0.0
-        let radius = this.radius
+        let radius = this.controll.circleRadius
         var positions = Array()
         for (var i = 0; i < bufferLen; i++) {
             let x = radius * Math.cos(angle)
@@ -61,7 +60,7 @@ class AnimatedCircle {
         // iterate over each point and translate it along the circles radius:
         let deltaAngle = 2 * Math.PI / bufferLen 
         var angle = 0.0
-        var baseRadius = this.radius
+        var baseRadius = this.controll.circleRadius
 
         for (var i = 0; i < bufferLen; i++) {
             let radius = baseRadius + dataArray[i] / 128.0
@@ -69,7 +68,6 @@ class AnimatedCircle {
             // TODO: No Trigonomoetry here! Translate points!
             let x = radius * Math.cos(angle)
             let y = radius * Math.sin(angle)
-
            
             this.points.cloud.geometry.vertices[i].x = x
             this.points.cloud.geometry.vertices[i].y = y
@@ -83,6 +81,7 @@ class AnimatedCircle {
             this.points.cloud.geometry.colors[i] = new THREE.Color('rgb('+r+','+g+','+b+')')
             angle += deltaAngle
         } 
+        this.points.cloud.rotateOnAxis(new THREE.Vector3(0,0,1), 0.01)
         this.points.cloud.geometry.verticesNeedUpdate = true
         this.points.cloud.geometry.colorsNeedUpdate=true
     } 
@@ -93,7 +92,7 @@ class AnimantedSpiral {
 
     constructor(webgl, controll, radiusMin, radiusMax, numCircles) {
         this.webgl = webgl
-        this.radiusMin = radiusMin 
+        this.radiusMin = radiusMin // TODO: Not needed, we have them in controll
         this.radiusMax = radiusMax
         this.numCircles = numCircles
         this.controll = controll 
@@ -156,8 +155,11 @@ class AnimantedSpiral {
 
 
         for (var i = 0; i < bufferLen; i++) {
-            let radius = baseRadius + dataArray[i] / 128.0
-
+            // TODO
+            let v = dataArray[i]        // 0 to 255
+            let addedRadius = -1.0 + (v / 125) * this.controll.spiralPointDamping / 5.0
+            let radius = baseRadius + addedRadius
+            // console.log(radius)
             // TODO: No Trigonomoetry here! Translate points!
             let x = radius * Math.cos(angle)
             let y = radius * Math.sin(angle)
@@ -177,7 +179,11 @@ class AnimantedSpiral {
         } 
         this.points.cloud.geometry.verticesNeedUpdate = true
         this.points.cloud.geometry.colorsNeedUpdate = true
-        this.points.cloud.rotateOnAxis(new THREE.Vector3(0,0,1), 0.01)
+        if (this.controll.spiralRotationSpeed > 0) {
+            // TODO: Add FPS into speed
+            let speed = this.controll.spiralRotationSpeed / 500
+            this.points.cloud.rotateOnAxis(new THREE.Vector3(0,0,1), speed)
+        }
     } 
 
 }
