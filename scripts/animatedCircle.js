@@ -1,5 +1,6 @@
 
-// TODO in both classes: Code in calculatePoints and update is repeating
+// TODO in both classes: Code in calculatePoints and update is repeating. The best case here would be an update function 
+// that takes in another function as parameter which determines how to calculate each new point position in the cloud
 
 class AnimatedCircle {
     constructor(webgl, controll) {
@@ -15,22 +16,17 @@ class AnimatedCircle {
         var angle = 0.0
         let radius = this.controll.circleRadius
         var positions = Array()
+        var colors = Array()
         for (var i = 0; i < bufferLen; i++) {
             let x = radius * Math.cos(angle)
             let y = radius * Math.sin(angle)
             positions.push(new THREE.Vector3(x, y, 0))
+            colors.push(new THREE.Color('rgb('+this.controll.R+','+this.controll.G+','+this.controll.B+')'))
             angle += deltaAngle
         } 
-
-        // TODO: This seems bad for performance (two big array, of which one will not be needed)
-        let color = new THREE.Color(this.controll.R / 255, this.controll.G / 255, this.controll.B / 255, 100)
        
-        this.points = new Particle(this.webgl, positions, color)
-        this.points.generatePointCloud()
-
-       /* this.webgl.drawSprites(color, 0.2, positions).forEach( sprite => {
-            this.points.push(sprite)
-        }) */
+        this.points = new Particle(this.webgl)
+        this.points.generatePointCloud(positions, colors)
     }
 
     // three.js want us to dispose scene objects manually.
@@ -55,9 +51,9 @@ class AnimatedCircle {
             this.calculatePoints(dataArray.length)
         } */
 
-        let bufferLen = dataArray.length
 
         // iterate over each point and translate it along the circles radius:
+        let bufferLen = dataArray.length
         let deltaAngle = 2 * Math.PI / bufferLen 
         var angle = 0.0
         var baseRadius = this.controll.circleRadius
@@ -108,19 +104,18 @@ class AnimantedSpiral {
         var radius = this.radiusMin
 
         var positions = Array()
+        var colors = Array()
         for (var i = 0; i < bufferLen; i++) {
             let x = radius * Math.cos(angle)
             let y = radius * Math.sin(angle)
             positions.push(new THREE.Vector3(x, y, 0))
+            colors.push(new THREE.Color('rgb('+this.controll.R+','+this.controll.G+','+this.controll.B+')'))
             angle += deltaAngle
             radius += deltaRadius
         } 
-
-        // TODO: This seems bad for performance (two big array, of which one will not be needed)
-        let color = new THREE.Color(this.controll.R / 255, this.controll.G / 255, this.controll.B / 255)
        
-        this.points = new Particle(this.webgl, positions, color)
-        this.points.generatePointCloud()
+        this.points = new Particle(this.webgl)
+        this.points.generatePointCloud(positions, colors)
     }
 
     // three.js want us to dispose scene objects manually.

@@ -9,8 +9,6 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css"> -->
     <!-- JQuery -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-    <!-- Bootstrap javascript -->
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
     <!-- Three.js -->
     <script src="scripts/three.min.js"></script>
     <!-- Notify.js -->
@@ -35,19 +33,38 @@
             position: absolute;
             z-index: 1000;
         }
+
+        /* increase dat.gui.js font size for screens with increased pixel-ratio */
+        @media only screen and (-webkit-min-device-pixel-ratio: 1.5),
+                    screen and (-moz-min-device-pixel-ratio: 1.5),
+                    screen and (min-device-pixel-ratio: 1.5) {
+            .dg {
+                font: 18px 'Lucida Grande', sans-serif !important;
+            }
+            .dg.main.a {
+                width: 30% !important;
+            }
+            .dg .property-name {
+                width: 70% !important;
+            }
+            .dg .c {
+                width: 30% !important;
+            }
+        }
+
         #gui {
-            /* 
-            TODO: Increase gui depending on media type */
-            /* transform: scale(1.5); */
              position: absolute; 
              top: 2px; 
              left: 2px;
              z-index: 1000; 
         }
+
         audio {
+            width: 300px;
             position: absolute;
             top: 80%;
-            left: 40%;
+            left: 50%;
+            margin-left: -150px;
             z-index: 1000;
         }
     </style>

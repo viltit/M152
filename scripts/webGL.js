@@ -154,15 +154,14 @@ class WebGL {
 
 /* wrapper around three.js point cloud class */
 class Particle {
-    constructor(webgl, positions, color) {
+    constructor(webgl) {
         this.webgl = webgl
-        this.positions = positions
-        this.color = color
         this.cloud = null
     }
 
-    // generates the necessary three.js objects and adds them to the scene
-    generatePointCloud() {
+    // generates the necessary three.js objects and adds them to the scene. Very similar to the update function, but the update 
+    // does not generate any new three.js objects
+    generatePointCloud(positions, colors) {
 
         let spriteMap = new THREE.TextureLoader().load("textures/circle.png")
         var material = new THREE.PointsMaterial({ map: spriteMap, size: 0.6, vertexColors: THREE.VertexColors, opacity: 0.5 })
@@ -171,8 +170,8 @@ class Particle {
         material.blending = THREE.AdditiveBlending
 
         var geometry = new THREE.Geometry();
-        geometry.vertices = this.positions
-        //  geometry.colors = this.color
+        geometry.vertices = positions
+        geometry.colors = colors
 
         var cloud = new THREE.Points(geometry, material);
         cloud.sizeAttenuation = true;
@@ -180,6 +179,12 @@ class Particle {
 
         this.webgl.scene.add(cloud)
         this.cloud = cloud
+    }
+
+    update(positions, colors) {
+        this.cloud.geometry.vertices = positions
+        this.cloud.geometry.verticesNeedUpdate = true
+        this.cloud.geometry.colorsNeedUpdate = true
     }
 
     deletePointCloud() {

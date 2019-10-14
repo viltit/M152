@@ -37,7 +37,12 @@ $(document).ready(function () {
 function render() {
     // console.log("Render")
     requestAnimationFrame(render)
-    app.audio.render()
+
+    // do not update audio rendering when audio is paused -> the user can study the last generated image
+    let audio = document.getElementById('audio')
+    if (audio !== null && !audio.paused) {
+        app.audio.render()
+    }
     app.webGL.renderer.render(app.webGL.scene, app.webGL.camera)
 }
 
@@ -57,6 +62,8 @@ class App {
             this.drawBars = false 
             this.drawCircle = false
             this.drawSpiral = false
+            this.waveLine = true            // draw types for waveform
+            this.wavePoints = false
             this.spiralMinRadius = 1
             this.spiralMaxRadius = 3
             this.spiralNumCircles = 3
@@ -82,7 +89,7 @@ class App {
         // form controlls
         var drawFolder = this.gui.addFolder('Draw types')
         drawFolder.add(controll, 'drawWaves').name('Audio wave').listen().onChange( () => {
-            // sprialFolder.close()
+            this.audio.resetWaveform()
         })
         drawFolder.add(controll, 'drawBars').name('Frequency bar').listen().onChange( () => {
             // sprialFolder.close()
@@ -96,6 +103,14 @@ class App {
             sprialFolder.open()
         })
         drawFolder.open()
+
+        // waveform controls
+        var waveFolder = this.gui.addFolder('Waveform settings')
+        waveFolder.add(controll, 'waveLine').name('Line')
+        waveFolder.add(controll, 'wavePoints').name('Point Cloud').listen().onChange( () => {
+            this.audio.resetWaveform()
+        })
+        waveFolder.open()
 
         // circle controls
         var circleFolder = this.gui.addFolder('Circle settings')

@@ -15,6 +15,8 @@ class Audio {
         this.animatedCircle = new AnimatedCircle(webgl, controll, 3.0)
         // TODO: Only initialize when needed 
         this.animatedSpiral = new AnimantedSpiral(webgl, controll, 1.0, 3.0, 3)
+        // TODO: Again ... 
+        this.wavePoints = null;
         this.webgl = webgl
         this.controll = controll
         this.sceneObjects = Array()
@@ -78,6 +80,7 @@ class Audio {
         var docBody = document.getElementById('body')
         this.htmlAudio = document. createElement('audio')
         docBody.appendChild(this.htmlAudio)
+        this.htmlAudio.id = 'audio'
         this.htmlAudio.src = URL.createObjectURL(data) // sets the audio source to the dropped file
         this.htmlAudio.autoplay = true
         this.htmlAudio.crossOrigin = "anonymous"
@@ -102,6 +105,7 @@ class Audio {
     
         // the analyser by default takes 2048 data points in each update. We can change this value with "analyser.fftSize = "
         // this value must be a power of 2
+        // TODO: What timestep does correspond to one analyser frame???
         this.analyser.fftSize = Math.pow(2, this.controll.fftExponent)
     }
 
@@ -175,41 +179,50 @@ class Audio {
         })
     }
 
-    // TODO: Rename
-    analyseAudio() {
-        
+    drawWaveform() {
+
         let dataArray = this.getWaveformData()
         let bufferLen = dataArray.length
 
         // assume that three.js window coordinates are going from [ -8, -5 ] to [ 8, 5 ]
-        // TODO: Check if that if that holds
         let sliceWidth = 16.0 / bufferLen 
         var x = -8.0 
         
         // var geometry = new Float32Array(2 * bufferLen);
-        // TODO: Appending to the array may be bad for performance. Try to use pre-allocated array
+        // TODO: Appending to the array may be bad for performance. How to pre-allocate arrays in js ?
         var geometry = Array()
+        var colors = Array()
 
         for(var i = 0; i < bufferLen; i++) {
-   
+
             var v = dataArray[i] / 128.0  // v(max) is 2
             var y = -5.0 + (v * 10.0 / 2.0)
 
             geometry.push(new THREE.Vector3(x, y, 0.0))
-            /*
-            if(i === 0) {
-              canvasCtx.moveTo(x, y);
-            } else {
-              canvasCtx.lineTo(x, y);
-            }
-            */
-    
+            colors.push(new THREE.Color('rgb('+this.controll.R+','+this.controll.G+','+this.controll.B+')'))
             x += sliceWidth
           }
 
-        // TODO: We need to destroy the geometry too !!
-        var obj = this.webgl.drawLineStrip('rgb('+this.controll.R+','+this.controll.G+','+this.controll.B+')', geometry)
-        this.sceneObjects.push(obj)  
+        if (this.controll.waveLine) {
+            var obj = this.webgl.drawLineStrip('rgb('+this.controll.R+','+this.controll.G+','+this.controll.B+')', geometry)
+            this.sceneObjects.push(obj)  
+        }
+        if (this.controll.wavePoints) {
+            if (this.wavePoints == null) {
+                this.wavePoints = new Particle(this.webgl)
+                this.wavePoints.generatePointCloud(geometry, colors)
+            }
+            else {
+                this.wavePoints.update(geometry, colors)
+            }
+        }
+    }
+
+    resetWaveform() {
+        if (this.wavePoints !== null) {
+            this.wavePoints.deletePointCloud()
+            this.wavePoints = null
+        }
     }
 
     drawAnimatedCircleFromWave() {
@@ -250,7 +263,7 @@ class Audio {
 
         // render depending on what user did choose
         if (this.controll.drawWaves) {
-            this.analyseAudio()
+            this.drawWaveform()
         }
         if (this.controll.drawBars) {
             this.analyseFrequencyData()
