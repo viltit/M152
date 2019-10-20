@@ -31,6 +31,9 @@ $(document).ready(function () {
     render()
 
     $.notify("App finished loading. Drag and drop an audio source into the window.", "success")
+
+    // console log to output the html for validation:
+    // console.log($("html").html())
 });
 
 // rendering loop
@@ -44,6 +47,9 @@ function render() {
         app.audio.render()
     }
     app.webGL.renderer.render(app.webGL.scene, app.webGL.camera)
+
+    // console log to output the html for validation. This will slow down the App very quickly!
+    console.log($("html").html())
 }
 
 // Class App - holds instances of our Three.js-Wrapper and our Audio-API-Wrapper. Also sets up the UI

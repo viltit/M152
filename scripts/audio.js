@@ -247,6 +247,50 @@ class Audio {
         this.animatedSpiral.removePoints()
     }
 
+    // WIP: Plot wave around a mid-point with a given winding speed. This would be the first step in a visual fourier transform
+    drawFourierIntro() {
+
+        let dataArray = this.getWaveformData()
+        let bufferLen = dataArray.length
+
+        var angle = 0.0 
+        var deltaAngle = 2 * Math.PI / bufferLen
+
+        // var geometry = new Float32Array(2 * bufferLen);
+        // TODO: Appending to the array may be bad for performance. How to pre-allocate arrays in js ?
+        var geometry = Array()
+        var colors = Array()
+
+        for(var i = 0; i < bufferLen; i++) {
+
+            var radius = dataArray[i] / 128.0 * 2.0 // radius(max) is 4
+            if (dataArray[i] < 100) {
+                console.log("Data: ", dataArray[i])
+                console.log("Radius: ", radius)
+            }
+
+            geometry.push(new THREE.Vector3(Math.cos(angle) * radius, Math.sin(angle) * radius, 0.0))
+            colors.push(new THREE.Color('rgb('+this.controll.R+','+this.controll.G+','+this.controll.B+')'))
+            angle += deltaAngle
+          }
+
+        if (this.controll.waveLine) {
+            var obj = this.webgl.drawLineStrip('rgb('+this.controll.R+','+this.controll.G+','+this.controll.B+')', geometry)
+            this.sceneObjects.push(obj)  
+        }
+        if (this.controll.wavePoints) {
+            if (this.wavePoints == null) {
+                this.wavePoints = new Particle(this.webgl)
+                this.wavePoints.generatePointCloud(geometry, colors)
+            }
+            else {
+                this.wavePoints.update(geometry, colors)
+            }
+        }
+
+
+    }
+
     render() {
         // delete all previously rendered lines from the scene. 
         // TODO: Solve this more effeciently. Just adapt the positions of the line string, like you do for the circle
