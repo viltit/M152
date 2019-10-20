@@ -12,6 +12,8 @@ class WebGL {
         this.renderer = new THREE.WebGLRenderer({ antialias: true })
         this.renderer.setClearColor(0x000000, 1.0)
         this.renderer.setSize(window.innerWidth, window.innerHeight)
+
+        // TEST: Lights
         const color = 0xff0000;
         const intensity = 0.4;
         const light1 = new THREE.AmbientLight(color, intensity);
@@ -87,10 +89,10 @@ class WebGL {
     // TODO: Remove repeating code
     drawBars(color, vectors) {
 
-        console.log(vectors.length)
+       // console.log(vectors.length)
         var geometryArray = Array()
         for (var i = 0; i < vectors.length; i++) {
-            var material = new THREE.MeshPhongMaterial({
+            var material = new THREE.MeshBasicMaterial({
                 color: color
             })
             

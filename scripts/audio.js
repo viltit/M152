@@ -54,19 +54,18 @@ class Audio {
                 return
             }
 
+            /*
             // console.log(event.dataTransfer.types.length)
             for (var i = 0; i < event.dataTransfer.types.length; i++) {
                 console.log("... items[" + i + "].kind = " + event.dataTransfer.items[i].kind + " ; type = " + event.dataTransfer.items[i].type)
                 console.log(event.dataTransfer.files[i].name)
-            }
+            } */
 
             this.loadAudio(event.dataTransfer.files[0])
         })
     }
 
-    /* 
-    Load audio after drag and drop and create an Audio-Analyser on top of the Audio-Data
-    */
+    /* Load audio after drag and drop and create an Audio-Analyser on top of the Audio-Data */
     loadAudio(data) {
 
         // Check if we already play audio and stop it:
@@ -86,7 +85,7 @@ class Audio {
         this.htmlAudio.crossOrigin = "anonymous"
         this.htmlAudio.controls = true 
         
-        // sadly, we can not print the duration of the audio source because it is streaming
+        // sadly, we can not print the duration of the audio source. At this point, we get "null"
         $.notify("Loaded audio source " + data.name + " | File size: " + data.size + "bytes" + " | Duration: " + this.htmlAudio.duration, "success")
         
         // create audio api context
@@ -109,6 +108,8 @@ class Audio {
         this.analyser.fftSize = Math.pow(2, this.controll.fftExponent)
     }
 
+    // Resets the analyser with a new fft size
+    // TODO: Did not work
     resetAnalyser(fftExponent) {
         
         if (this.context === null) {
@@ -120,6 +121,7 @@ class Audio {
         this.analyser.fftSize = Math.pow(2, fftExponent)
     }
 
+    /* Get the analysers waveform data */
     getWaveformData() {
         if (this.analyser === null) {
             console.log("Error: Called <getWaveformData> with no Analyser!")
@@ -131,8 +133,9 @@ class Audio {
         return  dataArray
     }
 
+    /* Get the analysers Frequency data*/
     getFrequencyData() {
-        console.log(this.htmlAudio.duration)
+       // console.log(this.htmlAudio.duration)   // At this point, we have the duration -> could rework the waveform to fit the whole audio on screen
         if (this.analyser === null) {
             console.log("Error: Called <getFrequencyData> with no Analyser!")
             return
@@ -142,7 +145,6 @@ class Audio {
         this.analyser.getByteFrequencyData(dataArray)
         return dataArray
     }
-
     // TODO: Rename
     analyseFrequencyData() {
     

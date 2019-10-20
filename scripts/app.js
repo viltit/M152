@@ -120,7 +120,7 @@ class App {
         var sprialFolder = this.gui.addFolder('Spiral settings')
         sprialFolder.add(controll, 'spiralMinRadius', 0.1, 3).name('inner radius').step(0.1)
         sprialFolder.add(controll, 'spiralMaxRadius', 1, 6).name('outer radius').step(0.1)
-        sprialFolder.add(controll, 'spiralNumCircles', 1, 10).name('number of circles').step(1)
+        sprialFolder.add(controll, 'spiralNumCircles', 1, 10).name('circles').step(1)
         sprialFolder.add(controll, "spiralRotationSpeed", 0, 10).name('rotation speed').step(1)
         sprialFolder.add(controll, "spiralPointDamping", 0, 10).name('points jumping distance').step(1)
 
